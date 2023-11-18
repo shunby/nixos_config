@@ -2,12 +2,14 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running `nixos-help`).
 
-{ config, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+    ] ++ [
+      inputs.xremap.nixosModules.default
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -53,7 +55,79 @@
   services.xserver.layout = "jp";
   services.xserver.xkbModel = "sun(type6jp)";
   # services.xserver.xkbOptions = "eurosign:e,caps:escape";
+  
+  services.xremap = {
+    userName = "mikanami";
+    serviceMode = "system";
+    config = {
+      modmap = [
+        {
+          remap = {
+            Space = {
+              held = "Space";
+              alone = "F24";
+            };
+          };
+        }
+      ];
 
+      virtual_modifiers = [
+        "Muhenkan"
+        "Space"
+      ];
+
+      keymap = [
+        {
+          remap = {
+            Muhenkan-i = "Up";
+            Muhenkan-j = "Left";
+            Muhenkan-k = "Down";
+            Muhenkan-l = "Right";
+            Muhenkan-u = "Home";
+            Muhenkan-o = "End";
+            CapsLock = "BackSpace";
+            F24 = "Space";
+
+            Space-q = "Shift-1";
+            Space-w = "Shift-Slash";
+            Space-e = "Shift-2";
+            Space-r = "Shift-7";
+            Space-t = "Shift-3";
+
+            Space-a = "Shift-Minus";
+            Space-s = "Shift-Semicolon";
+            Space-d = "Shift-8";
+            Space-f = "Shift-9";
+            Space-g = "Shift-Apostrophe";
+
+            Space-z = "Ro";
+            Space-x = "LeftBrace";
+            Space-c = "RightBrace";
+            Space-v = "BackSlash";
+            Space-b = "Shift-5";
+
+            Space-y = "Equal";
+            Space-u = "Comma";
+            Space-i = "Dot";
+            Space-o = "Minus";
+            Space-p = "Shift-6";
+            Space-LeftBrace = "Shift-Yen";
+
+            Space-h = "Shift-Equal";
+            Space-j = "Shift-RightBrace";
+            Space-k = "Shift-BackSlash";
+            Space-l = "Semicolon";
+            Space-Semicolon = "Shift-LeftBrace";
+
+            Space-n = "Shift-4";
+            Space-m = "Shift-Comma";
+            Space-Comma = "Shift-Dot";
+            Space-Dot = "Shift-Ro";
+          };
+        }
+      ];
+    };
+  };
   # Enable CUPS to print documents.
   # services.printing.enable = true;
 
@@ -88,6 +162,7 @@
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
+    git
   ];
 
   programs = {
